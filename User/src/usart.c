@@ -1,5 +1,6 @@
 #include "usart.h"
 
+uint8_t buf_rx[10], buf_tx[10];
 
 
 
@@ -39,6 +40,53 @@ void usart_init(void)
 	
 }
 //---------------------------------------------------------------------------------
+void usart_dma_ini(void)
+{
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+	
+	//TX
+	DMA_InitTypeDef dma_usart;
+	dma_usart.DMA_Channel = DMA_Channel_4;
+	dma_usart.DMA_PeripheralBaseAddr = (uint32_t)&USART3->DR;
+	dma_usart.DMA_Memory0BaseAddr = (uint32_t)buf_tx;
+	dma_usart.DMA_DIR =DMA_DIR_MemoryToPeripheral;
+	dma_usart.DMA_BufferSize = sizeof(buf_tx);
+	dma_usart.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	dma_usart.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	dma_usart.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	dma_usart.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	dma_usart.DMA_Mode = DMA_Mode_Normal;
+	dma_usart.DMA_Priority = DMA_Priority_Medium;
+	dma_usart.DMA_FIFOMode = DMA_FIFOMode_Disable;
+	dma_usart.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+	dma_usart.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	dma_usart.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	
+	DMA_Init(DMA1_Stream3, &dma_usart);
+	DMA_Cmd(DMA1_Stream3, ENABLE);
+	
+	//RX
+	dma_usart.DMA_Channel = DMA_Channel_4;
+	dma_usart.DMA_PeripheralBaseAddr = (uint32_t)&USART3->DR;
+	dma_usart.DMA_Memory0BaseAddr = (uint32_t)buf_rx;
+	dma_usart.DMA_DIR = DMA_DIR_PeripheralToMemory;
+	dma_usart.DMA_BufferSize = sizeof(buf_rx);
+	dma_usart.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	dma_usart.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	dma_usart.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	dma_usart.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	dma_usart.DMA_Mode = DMA_Mode_Normal;
+	dma_usart.DMA_Priority = DMA_Priority_Medium;
+	dma_usart.DMA_FIFOMode = DMA_FIFOMode_Disable;
+	dma_usart.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+	dma_usart.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	dma_usart.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	
+	DMA_Init(DMA1_Stream1, &dma_usart);
+	DMA_Cmd(DMA1_Stream1, ENABLE);
+	
+}
+//---------------------------------------------------------------------------------
 void usart_txstr(char* str)
 {
 	while(*str)
@@ -49,6 +97,8 @@ void usart_txstr(char* str)
 	}
 }
 //---------------------------------------------------------------------------------
+
+
 
 
 

@@ -1,8 +1,8 @@
 #include "main.h"
 
 
-char usart_buf[30];
-char str[30];
+char usart_buf[16];
+char str[17];
 int count = 0;
 
 //--------------------------------------------------------------------------
@@ -24,7 +24,7 @@ void USART3_IRQHandler(void)
 	if(USART_GetITStatus(USART3, USART_IT_RXNE))//если прерывание по передаче
 	{
 		USART_ClearITPendingBit(USART3, USART_IT_RXNE);//очищаем флаг
-		if(count<30)
+		if(count<16)
 		{
 			usart_buf[count] = USART_ReceiveData(USART3);
 			USART_SendData(USART3, usart_buf[count]);	
